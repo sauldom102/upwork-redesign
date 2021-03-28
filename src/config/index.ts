@@ -1,2 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export const GRAPHQL_ENDPOINT = '';
+
+export const SUPPORT_URL = 'https://unsplash.com/';

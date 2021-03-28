@@ -1,28 +1,51 @@
 import React, { FC } from 'react';
-import { Home } from 'containers';
-import { NavigationContainer } from '@react-navigation/native';
+import { JobDetail, Stories, Chat, SubmitProposal, Settings } from 'containers';
+import Tabs from 'containers/Tabs';
 import { enableScreens } from 'react-native-screens';
 import { mainStackScreenOptions } from './constants';
-import { Props, MainStackParams } from './types';
+import { Props, Params } from './types';
 import { createStack } from './utils';
+import AuthNavigator from './Auth';
+import useConnect from './connect';
 
 enableScreens();
 
-const MainStack = createStack<MainStackParams>();
+const RootStack = createStack<Params>();
+const MainStack = createStack<Params>();
 
 const Main = () => (
   <MainStack.Navigator
     screenOptions={mainStackScreenOptions}
-    initialRouteName="Home"
+    initialRouteName="Tabs"
   >
-    <MainStack.Screen name="Home" component={Home} />
+    <MainStack.Screen name="Tabs" component={Tabs} />
+    <MainStack.Screen name="JobDetail" component={JobDetail} />
+    <MainStack.Screen name="Chat" component={Chat} />
+    <MainStack.Screen name="Settings" component={Settings} />
   </MainStack.Navigator>
 );
 
-const Navigator: FC<Props> = () => (
-  <NavigationContainer>
-    <Main />
-  </NavigationContainer>
-);
+const Navigator: FC<Props> = () => {
+  const { loggedIn } = useConnect();
+
+  return (
+    <RootStack.Navigator
+      screenOptions={{
+        headerShown: false,
+        stackPresentation: 'transparentModal',
+      }}
+    >
+      {loggedIn ? (
+        <>
+          <RootStack.Screen name="Main" component={Main} />
+          <RootStack.Screen name="Stories" component={Stories} />
+          <RootStack.Screen name="SubmitProposal" component={SubmitProposal} />
+        </>
+      ) : (
+        <RootStack.Screen name="Auth" component={AuthNavigator} />
+      )}
+    </RootStack.Navigator>
+  );
+};
 
 export default Navigator;

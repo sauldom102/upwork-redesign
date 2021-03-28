@@ -1,39 +1,27 @@
-import React, { FC, useEffect, useState } from 'react';
-import StatusBar from 'components/StatusBar';
-import theme from 'theme';
-import { ApolloProvider } from '@apollo/react-hooks';
-import ApolloClient from 'apollo-client';
-import { NormalizedCacheObject } from 'apollo-cache-inmemory';
-import { ThemeProvider } from 'styled-components';
+import React, { FC } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { setupApollo } from 'apollo';
+import ThemeProvider from 'theme/provider';
 import Navigator from 'navigator';
+import { BlurWall } from 'components';
+import { navigationStyles } from './styles';
 import { Props } from './types';
+import useConnect from './connect';
 
 const Root: FC<Props> = () => {
-  const [apolloClient, setApolloClient] = useState<
-    ApolloClient<NormalizedCacheObject>
-  >();
-
-  useEffect(() => {
-    setupApollo().then((client) => {
-      setApolloClient(client);
-    });
-  }, []);
-
-  if (!apolloClient) {
-    return null;
-  }
+  const { handleReady } = useConnect();
 
   return (
-    <ApolloProvider client={apolloClient}>
-      <ThemeProvider theme={theme}>
-        <StatusBar />
-        <SafeAreaProvider>
-          <Navigator />
-        </SafeAreaProvider>
-      </ThemeProvider>
-    </ApolloProvider>
+    <>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <NavigationContainer theme={navigationStyles} onReady={handleReady}>
+            <Navigator />
+          </NavigationContainer>
+        </ThemeProvider>
+      </SafeAreaProvider>
+      <BlurWall />
+    </>
   );
 };
 
